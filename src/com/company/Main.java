@@ -15,31 +15,31 @@ public class Main {
 
         while (open) {
             String str = sc.nextLine();
-            if (str.matches("addv \\w+")){
+            if (str.matches("addv [\\wа-яё]+")){
                 graph.addVertex(str.split(" ")[1]);
             }
-            if (str.matches("adda \\w+ \\w+ \\d+")){
+            if (str.matches("adda [\\wа-яё]+ [\\wа-яё]+ \\d+")){
                 graph.addArc(str.split(" ")[1], str.split(" ")[2],
                         Integer.parseInt(str.split(" ")[3]));
             }
-            if (str.matches("out \\w+")){
+            if (str.matches("out [\\wа-яё]+")){
                 graph.getOutArcs(str.split(" ")[1]);
             }
-            if (str.matches("in \\w+")){
+            if (str.matches("in [\\wа-яё]+")){
                 graph.getInArcs(str.split(" ")[1]);
             }
-            if (str.matches("chn \\w+ \\w+")){
+            if (str.matches("chn [\\wа-яё]+ [\\wа-яё]+")){
                 graph.changeName(str.split(" ")[1], str.split(" ")[2]);
             }
-            if (str.matches("chs \\w+ \\w+ \\d+ \\d+")){
+            if (str.matches("chs [\\wа-яё]+ [\\wа-яё]+ \\d+ \\d+")){
                 graph.changeArcSize(str.split(" ")[1], str.split(" ")[2],
                         Integer.parseInt(str.split(" ")[3]), Integer.parseInt(str.split(" ")[4]));
             }
-            if (str.matches("dela \\w+ \\w+ \\d+")){
+            if (str.matches("dela [\\wа-яё]+ [\\wа-яё]+ \\d+")){
                 graph.delArc(str.split(" ")[1], str.split(" ")[2],
                         Integer.parseInt(str.split(" ")[3]));
             }
-            if (str.matches("delv \\w+")){
+            if (str.matches("delv [\\wа-яё]+")){
                 graph.delVertex(str.split(" ")[1]);
             }
             if (str.matches("close")){
