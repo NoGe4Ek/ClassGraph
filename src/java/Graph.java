@@ -1,5 +1,3 @@
-package com.company;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -30,13 +28,17 @@ public class Graph {
 
     private HashMap<String, ArrayList<Arc>> graph = new HashMap();
 
+    void clearGraph (){
+        graph.clear();
+    }
+
     void addVertex(String name){
         graph.put(name, null);
     }
     void addArc(String from, String to, int size){
         ArrayList<Arc> list;
         if (!new Check(graph.get(from)).isValid())
-            list = new ArrayList<>();
+            list = new ArrayList();
         else
             list = graph.get(from);
         list.add(new Arc(to, size));
@@ -79,24 +81,37 @@ public class Graph {
             }
         }
     }
-    void getOutArcs(String from){
+    String getOutArcs(String from){
+        String s = "";
         for (int i = 0; i < graph.get(from).size(); i++){
-            System.out.println(i+1 + ". Направлена в вершину " + graph.get(from).get(i).getName() +
-                    ", длина " + graph.get(from).get(i).getSize());
+            if (!s.equals("")){
+                s += "\n";
+            }
+            s += i+1 + ". Направлена в вершину " + graph.get(from).get(i).getName() +
+                    ", длина " + graph.get(from).get(i).getSize();
         }
+        return s;
     }
-    void getInArcs(String to){
+    String getInArcs(String to){
+        String s = "";
         int ch = 0;
         for(int i = 0; i < graph.size(); i++){
             if (new Check(graph.get(graph.keySet().toArray()[i])).isValid()) {
                 for (int j = 0; j < graph.get(graph.keySet().toArray()[i]).size(); j++) {
                     if (graph.get(graph.keySet().toArray()[i]).get(j).getName().equals(to)) {
-                        System.out.println(ch + 1 + ". Направлена из вершины " + graph.keySet().toArray()[i] +
-                                ", длина " + graph.get(graph.keySet().toArray()[i]).get(j).getSize());
+                        if (!s.equals("")){
+                            s += "\n";
+                        }
+                        s += ch + 1 + ". Направлена из вершины " + graph.keySet().toArray()[i] +
+                                ", длина " + graph.get(graph.keySet().toArray()[i]).get(j).getSize();
                         ch++;
                     }
                 }
             }
         }
+        if (s.equals(""))
+            throw new NullPointerException();
+        else
+            return s;
     }
 }

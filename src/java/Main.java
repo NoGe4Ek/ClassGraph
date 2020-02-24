@@ -1,5 +1,3 @@
-package com.company;
-
 import java.util.Scanner;
 
 public class Main {
@@ -23,10 +21,10 @@ public class Main {
                         Integer.parseInt(str.split(" ")[3]));
             }
             if (str.matches("out [\\wа-яё]+")){
-                graph.getOutArcs(str.split(" ")[1]);
+                System.out.println(graph.getOutArcs(str.split(" ")[1]));
             }
             if (str.matches("in [\\wа-яё]+")){
-                graph.getInArcs(str.split(" ")[1]);
+                System.out.println(graph.getInArcs(str.split(" ")[1]));
             }
             if (str.matches("chn [\\wа-яё]+ [\\wа-яё]+")){
                 graph.changeName(str.split(" ")[1], str.split(" ")[2]);

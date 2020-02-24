@@ -1,5 +1,3 @@
-package com.company;
-
 public class Check {
     Check(Object attr1){
         this.attr1 = attr1;
