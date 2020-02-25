@@ -1,5 +1,8 @@
 package GraphClass;
 
+
+import Implementation.Pair;
+
 import java.util.*;
 
 public class Graph {
@@ -27,69 +30,82 @@ public class Graph {
         }
     }
 
-    private Map<String, List<Arc>> graph = new HashMap();
+    private Map<String, Pair<List<Arc>, List<Pair<String, Integer>>>> graph = new HashMap();
 
     public void clearGraph (){
         graph.clear();
     }
 
     public void addVertex(String name){
-        graph.put(name, null);
+        graph.put(name, new Pair(null, null));
     }
+
     public void addArc(String from, String to, int size){
-        List<Arc> list;
-        if (graph.get(from) == null)
-            list = new ArrayList();
+        List<Arc> toList;
+        List<Pair<String,Integer>> fromList;
+        if (null == graph.get(from).fst)
+            toList = new ArrayList();
         else
-            list = graph.get(from);
-        list.add(new Arc(to, size));
-        graph.put(from, list);
-    }
-    public void delVertex(String name){
-        graph.remove(name);
-        for(int i = 0; i < graph.size(); i++){
-            for(int j = 0; j < graph.get(graph.keySet().toArray()[i]).size(); j++){
-                if (graph.get(graph.keySet().toArray()[i]).get(j).getName().equals(name)){
-                    graph.get(graph.keySet().toArray()[i]).remove(j);
-                }
-            }
+            toList = graph.get(from).fst;
+        if (null == graph.get(to).snd){
+            fromList = new ArrayList();
         }
+        else {
+            fromList = graph.get(to).snd;
+        }
+        toList.add(new Arc(to, size));
+        fromList.add(new Pair(from, toList.size() - 1));
+        graph.put(from, new Pair(toList, graph.get(from).snd));
+        graph.put(to, new Pair(graph.get(to).fst, fromList));
+    }
+
+    public void delVertex(String name){
+        for(int i = 0; i < graph.get(name).snd.size(); i++) {
+            graph.get(graph.get(name).snd.get(i).fst).fst.remove((int)graph.get(name).snd.get(i).snd);
+        }
+        graph.remove(name);
     }
     public void delArc(String from, String to, int size){
-        for (int i = 0; i < graph.get(from).size(); i++){
-            if (graph.get(from).get(i).getName().equals(to) && graph.get(from).get(i).getSize() == size){
-                graph.get(from).remove(i);
+        for (int i = 0; i < graph.get(from).fst.size(); i++){
+            if (graph.get(from).fst.get(i).getName().equals(to) && graph.get(from).fst.get(i).getSize() == size){
+                graph.get(from).fst.remove(i);
             }
         }
     }
-    public void changeName(String oldName, String newName){
-        graph.put(newName, graph.get(oldName));
-        graph.remove(oldName);
-        for(int i = 0; i < graph.size(); i++){
-            if (graph.get(graph.keySet().toArray()[i]) != null) {
-                for (int j = 0; j < graph.get(graph.keySet().toArray()[i]).size(); j++) {
-                    if (graph.get(graph.keySet().toArray()[i]).get(j).getName().equals(oldName)) {
-                        graph.get(graph.keySet().toArray()[i]).get(j).setName(newName);
+    public void changeName(String oldName, String newName) {
+        if (graph.get(oldName).fst != null)
+            for (int i = 0; i < graph.get(oldName).fst.size(); i++){
+                for (int j = 0; j < graph.get(graph.get(oldName).fst.get(i).name).snd.size(); j++){
+                    if (graph.get(graph.get(oldName).fst.get(i).name).snd.get(j).fst.equals(oldName)) {
+                        graph.get(graph.get(oldName).fst.get(i).name).snd.get(j).fst = newName;
+                        //graph.get(graph.get(oldName).fst.get(i).name).snd.remove(j);
+                        //graph.get(graph.get(oldName).fst.get(i).name).snd.add(new Pair(newName, graph.get(graph.get(oldName).fst.get(i).name).snd.get(j).snd));
                     }
                 }
             }
-        }
+        if (graph.get(oldName).snd != null)
+            for (int i = 0; i < graph.get(oldName).snd.size(); i++) {
+                    graph.get(graph.get(oldName).snd.get(i).fst).fst.
+                            get((int)graph.get(oldName).snd.get(i).snd).setName(newName);
+            }
+        graph.put(newName, graph.get(oldName));
+        graph.remove(oldName);
     }
     public void changeArcSize(String from, String to, int oldSize, int newSize){
-        for (int i = 0; i < graph.get(from).size(); i++){
-            if (graph.get(from).get(i).getName().equals(to) && graph.get(from).get(i).getSize() == oldSize){
-                graph.get(from).get(i).setSize(newSize);
+        for (int i = 0; i < graph.get(from).fst.size(); i++){
+            if (graph.get(from).fst.get(i).getName().equals(to) && graph.get(from).fst.get(i).getSize() == oldSize){
+                graph.get(from).fst.get(i).setSize(newSize);
             }
         }
     }
     public String getOutArcs(String from){
         String s = "";
-        for (int i = 0; i < graph.get(from).size(); i++){
+        for (int i = 0; i < graph.get(from).fst.size(); i++){
             if (!s.equals("")){
                 s += "\n";
             }
-            s += i+1 + ". Направлена в вершину " + graph.get(from).get(i).getName() +
-                    ", длина " + graph.get(from).get(i).getSize();
+            s += i+1 + ". Направлена в вершину " + graph.get(from).fst.get(i).getName() +
+                    ", длина " + graph.get(from).fst.get(i).getSize();
         }
         return s;
     }
@@ -97,14 +113,14 @@ public class Graph {
         String s = "";
         int ch = 0;
         for(int i = 0; i < graph.size(); i++){
-            if (graph.get(graph.keySet().toArray()[i]) != null) {
-                for (int j = 0; j < graph.get(graph.keySet().toArray()[i]).size(); j++) {
-                    if (graph.get(graph.keySet().toArray()[i]).get(j).getName().equals(to)) {
+            if (graph.get(graph.keySet().toArray()[i]).fst != null) {
+                for (int j = 0; j < graph.get(graph.keySet().toArray()[i]).fst.size(); j++) {
+                    if (graph.get(graph.keySet().toArray()[i]).fst.get(j).getName().equals(to)) {
                         if (!s.equals("")){
                             s += "\n";
                         }
                         s += ch + 1 + ". Направлена из вершины " + graph.keySet().toArray()[i] +
-                                ", длина " + graph.get(graph.keySet().toArray()[i]).get(j).getSize();
+                                ", длина " + graph.get(graph.keySet().toArray()[i]).fst.get(j).getSize();
                         ch++;
                     }
                 }
