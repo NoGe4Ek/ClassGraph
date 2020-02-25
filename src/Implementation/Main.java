@@ -1,3 +1,7 @@
+package Implementation;
+
+import GraphClass.Graph;
+
 import java.util.Scanner;
 
 public class Main {

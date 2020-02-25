@@ -1,9 +1,11 @@
+package GraphClass;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 
 public class Graph {
 
-    public class Arc {
+    private class Arc {
         public Arc(String name, int size){
             this.name = name;
             this.size = size;
@@ -28,23 +30,23 @@ public class Graph {
 
     private HashMap<String, ArrayList<Arc>> graph = new HashMap();
 
-    void clearGraph (){
+    public void clearGraph (){
         graph.clear();
     }
 
-    void addVertex(String name){
+    public void addVertex(String name){
         graph.put(name, null);
     }
-    void addArc(String from, String to, int size){
+    public void addArc(String from, String to, int size){
         ArrayList<Arc> list;
-        if (!new Check(graph.get(from)).isValid())
+        if (graph.get(from) == null)
             list = new ArrayList();
         else
             list = graph.get(from);
         list.add(new Arc(to, size));
         graph.put(from, list);
     }
-    void delVertex(String name){
+    public void delVertex(String name){
         graph.remove(name);
         for(int i = 0; i < graph.size(); i++){
             for(int j = 0; j < graph.get(graph.keySet().toArray()[i]).size(); j++){
@@ -54,18 +56,18 @@ public class Graph {
             }
         }
     }
-    void delArc(String from, String to, int size){
+    public void delArc(String from, String to, int size){
         for (int i = 0; i < graph.get(from).size(); i++){
             if (graph.get(from).get(i).getName().equals(to) && graph.get(from).get(i).getSize() == size){
                 graph.get(from).remove(i);
             }
         }
     }
-    void changeName(String oldName, String newName){
+    public void changeName(String oldName, String newName){
         graph.put(newName, graph.get(oldName));
         graph.remove(oldName);
         for(int i = 0; i < graph.size(); i++){
-            if (new Check(graph.get(graph.keySet().toArray()[i])).isValid()) {
+            if (graph.get(graph.keySet().toArray()[i]) != null) {
                 for (int j = 0; j < graph.get(graph.keySet().toArray()[i]).size(); j++) {
                     if (graph.get(graph.keySet().toArray()[i]).get(j).getName().equals(oldName)) {
                         graph.get(graph.keySet().toArray()[i]).get(j).setName(newName);
@@ -74,14 +76,14 @@ public class Graph {
             }
         }
     }
-    void changeArcSize(String from, String to, int oldSize, int newSize){
+    public void changeArcSize(String from, String to, int oldSize, int newSize){
         for (int i = 0; i < graph.get(from).size(); i++){
             if (graph.get(from).get(i).getName().equals(to) && graph.get(from).get(i).getSize() == oldSize){
                 graph.get(from).get(i).setSize(newSize);
             }
         }
     }
-    String getOutArcs(String from){
+    public String getOutArcs(String from){
         String s = "";
         for (int i = 0; i < graph.get(from).size(); i++){
             if (!s.equals("")){
@@ -92,11 +94,11 @@ public class Graph {
         }
         return s;
     }
-    String getInArcs(String to){
+    public String getInArcs(String to){
         String s = "";
         int ch = 0;
         for(int i = 0; i < graph.size(); i++){
-            if (new Check(graph.get(graph.keySet().toArray()[i])).isValid()) {
+            if (graph.get(graph.keySet().toArray()[i]) != null) {
                 for (int j = 0; j < graph.get(graph.keySet().toArray()[i]).size(); j++) {
                     if (graph.get(graph.keySet().toArray()[i]).get(j).getName().equals(to)) {
                         if (!s.equals("")){
