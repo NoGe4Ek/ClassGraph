@@ -1,7 +1,6 @@
 package GraphClass;
 
-import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.*;
 
 public class Graph {
 
@@ -28,7 +27,7 @@ public class Graph {
         }
     }
 
-    private HashMap<String, ArrayList<Arc>> graph = new HashMap();
+    private Map<String, List<Arc>> graph = new HashMap();
 
     public void clearGraph (){
         graph.clear();
@@ -38,7 +37,7 @@ public class Graph {
         graph.put(name, null);
     }
     public void addArc(String from, String to, int size){
-        ArrayList<Arc> list;
+        List<Arc> list;
         if (graph.get(from) == null)
             list = new ArrayList();
         else
@@ -115,5 +114,18 @@ public class Graph {
             throw new NullPointerException();
         else
             return s;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Graph graph1 = (Graph) o;
+        return Objects.equals(graph, graph1.graph);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(graph);
     }
 }
