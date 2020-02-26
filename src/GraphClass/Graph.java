@@ -85,22 +85,27 @@ public class Graph {
     }
 
     public boolean changeName(String oldName, String newName) {
-        if (graph.get(oldName) != null) {
-            graph.put(newName, graph.get(oldName));
-            graph.remove(oldName);
-            for (int i = 0; i < graph.size(); i++) {
-                if (graph.keySet().toArray()[i] != newName) {
-                    Map map = new HashMap();
-                    if (graph.get(graph.keySet().toArray()[i]).get(oldName) != null) {
-                        map.put(newName, graph.get(graph.keySet().toArray()[i]).get(oldName));
-                        graph.get(graph.keySet().toArray()[i]).remove(oldName);
-                        graph.put((String) graph.keySet().toArray()[i], map);
+        if (graph.get(newName) == null) {
+            if (graph.get(oldName) != null) {
+                graph.put(newName, graph.get(oldName));
+                graph.remove(oldName);
+                for (int i = 0; i < graph.size(); i++) {
+                    if (graph.keySet().toArray()[i] != newName) {
+                        Map map = new HashMap();
+                        if (graph.get(graph.keySet().toArray()[i]).get(oldName) != null) {
+                            map.put(newName, graph.get(graph.keySet().toArray()[i]).get(oldName));
+                            graph.get(graph.keySet().toArray()[i]).remove(oldName);
+                            graph.put((String) graph.keySet().toArray()[i], map);
+                        }
                     }
                 }
+                return true;
+            } else {
+                System.out.println("Вершина не существует");
+                return false;
             }
-            return true;
         } else {
-            System.out.println("Вершина не существует");
+            System.out.println("Вершина с таким именем уже существует");
             return false;
         }
     }
