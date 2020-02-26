@@ -7,7 +7,7 @@ import java.util.*;
 
 public class Graph {
 
-    private class Arc {
+    public static class Arc {
         public Arc(String name, int size){
             this.name = name;
             this.size = size;
@@ -98,34 +98,47 @@ public class Graph {
             }
         }
     }
-    public String getOutArcs(String from){
+    public List<Arc> getOutArcs(String from){
+        List<Arc> list = new ArrayList();
+        if (graph.get(from).fst != null)
+        for (int i = 0; i < graph.get(from).fst.size(); i++){
+            list.add(new Arc(graph.get(from).fst.get(i).getName(), graph.get(from).fst.get(i).getSize()));
+        }
+        return list;
+    }
+    public List<Arc> getInArcs(String to) {
+        List<Arc> list = new ArrayList();
+        if (graph.get(to).snd != null)
+            for (int i = 0; i < graph.get(to).snd.size(); i++) {
+                list.add(new Arc(graph.get(to).snd.get(i).fst,
+                        graph.get(graph.get(to).snd.get(i).fst).fst.get(graph.get(to).snd.get(i).snd).size));
+            }
+        return list;
+    }
+
+    public String getOutArcsInStr(String from){
         String s = "";
         for (int i = 0; i < graph.get(from).fst.size(); i++){
             if (!s.equals("")){
-                s += "\n";
+                s += System.lineSeparator();
             }
             s += i+1 + ". Направлена в вершину " + graph.get(from).fst.get(i).getName() +
                     ", длина " + graph.get(from).fst.get(i).getSize();
         }
         return s;
     }
-    public String getInArcs(String to){
+    public String getInArcsInStr(String to) {
         String s = "";
         int ch = 0;
-        for(int i = 0; i < graph.size(); i++){
-            if (graph.get(graph.keySet().toArray()[i]).fst != null) {
-                for (int j = 0; j < graph.get(graph.keySet().toArray()[i]).fst.size(); j++) {
-                    if (graph.get(graph.keySet().toArray()[i]).fst.get(j).getName().equals(to)) {
-                        if (!s.equals("")){
-                            s += "\n";
-                        }
-                        s += ch + 1 + ". Направлена из вершины " + graph.keySet().toArray()[i] +
-                                ", длина " + graph.get(graph.keySet().toArray()[i]).fst.get(j).getSize();
-                        ch++;
-                    }
+        if (graph.get(to).snd != null)
+            for (int i = 0; i < graph.get(to).snd.size(); i++) {
+                if (!s.equals("")) {
+                    s += System.lineSeparator();
                 }
+                s += ch + 1 + ". Направлена из вершины " + graph.get(to).snd.get(i).fst +
+                        ", длина " + graph.get(graph.get(to).snd.get(i).fst).fst.get(graph.get(to).snd.get(i).snd).size;
+                ch++;
             }
-        }
         if (s.equals(""))
             throw new NullPointerException();
         else

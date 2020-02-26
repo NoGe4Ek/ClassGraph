@@ -4,9 +4,11 @@ import GraphClass.Graph;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class GraphTest {
     Graph graph = new Graph();
-
     //            10
     //      1 ----------→ 2
     //      |            ↑
@@ -30,10 +32,10 @@ public class GraphTest {
         createGraph();
         Assertions.assertEquals("1. Направлена из вершины 1, длина 10\n" +
                         "2. Направлена из вершины 3, длина 20",
-                graph.getInArcs("2")
+                graph.getInArcsInStr("2")
         );
         Assertions.assertEquals("1. Направлена из вершины 1, длина 5",
-                graph.getInArcs("3")
+                graph.getInArcsInStr("3")
         );
         graph.clearGraph();
     }
@@ -43,10 +45,10 @@ public class GraphTest {
         createGraph();
         Assertions.assertEquals("1. Направлена в вершину 2, длина 10\n" +
                                          "2. Направлена в вершину 3, длина 5",
-                graph.getOutArcs("1")
+                graph.getOutArcsInStr("1")
         );
         Assertions.assertEquals("1. Направлена в вершину 2, длина 20",
-                graph.getOutArcs("3")
+                graph.getOutArcsInStr("3")
         );
         graph.clearGraph();
     }
@@ -59,11 +61,11 @@ public class GraphTest {
         graph.changeName("3", "Москва");
         Assertions.assertEquals("1. Направлена из вершины Ростов, длина 10\n" +
                         "2. Направлена из вершины Москва, длина 20",
-                graph.getInArcs("Минск")
+                graph.getInArcsInStr("Минск")
         );
         Assertions.assertEquals("1. Направлена в вершину Минск, длина 10\n" +
                         "2. Направлена в вершину Москва, длина 5",
-                graph.getOutArcs("Ростов")
+                graph.getOutArcsInStr("Ростов")
         );
         graph.clearGraph();
     }
@@ -75,10 +77,10 @@ public class GraphTest {
         graph.changeArcSize("3", "2", 20, 10);
         Assertions.assertEquals("1. Направлена в вершину 2, длина 20\n" +
                         "2. Направлена в вершину 3, длина 5",
-                graph.getOutArcs("1")
+                graph.getOutArcsInStr("1")
         );
         Assertions.assertEquals("1. Направлена в вершину 2, длина 10",
-                graph.getOutArcs("3")
+                graph.getOutArcsInStr("3")
         );
         graph.clearGraph();
     }
@@ -88,13 +90,13 @@ public class GraphTest {
         createGraph();
         graph.delVertex("2");
         Assertions.assertEquals("1. Направлена в вершину 3, длина 5",
-                graph.getOutArcs("1")
+                graph.getOutArcsInStr("1")
         );
         Assertions.assertEquals("1. Направлена из вершины 1, длина 5",
-                graph.getInArcs("3")
+                graph.getInArcsInStr("3")
         );
         Assertions.assertThrows(NullPointerException.class, () -> {
-            graph.getInArcs("2");
+            graph.getInArcsInStr("2");
         });
         graph.clearGraph();
     }
@@ -104,10 +106,10 @@ public class GraphTest {
         createGraph();
         graph.delArc("1", "2", 10);
         Assertions.assertEquals("1. Направлена в вершину 3, длина 5",
-                graph.getOutArcs("1")
+                graph.getOutArcsInStr("1")
         );
         Assertions.assertEquals("1. Направлена из вершины 3, длина 20",
-                graph.getInArcs("2")
+                graph.getInArcsInStr("2")
         );
         graph.clearGraph();
     }
