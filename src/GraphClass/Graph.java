@@ -1,148 +1,159 @@
 package GraphClass;
 
-
-import Implementation.Pair;
-
 import java.util.*;
 
 public class Graph {
 
-    public static class Arc {
-        public Arc(String name, int size){
-            this.name = name;
-            this.size = size;
-        }
-
-        private String name;
-        private int size;
-
-        public void setName(String name){
-            this.name = name;
-        }
-        public void setSize(int size){
-            this.size = size;
-        }
-        public String getName(){
-            return name;
-        }
-        public int getSize(){
-            return  size;
-        }
-    }
-
-    private Map<String, Pair<List<Arc>, List<Pair<String, Integer>>>> graph = new HashMap();
+    Map<String, Map<String, Integer>> graph = new HashMap();
+    String startVertex = "";
 
     public void clearGraph (){
         graph.clear();
     }
 
-    public void addVertex(String name){
-        graph.put(name, new Pair(null, null));
+    public boolean addVertex(String name){
+        if (startVertex.equals("")) {
+            startVertex = name;
+            graph.put(name, new HashMap());
+            return true;
+        } else {
+            System.out.println("Начальная вершина уже существует");
+            return false;
+        }
     }
 
-    public void addArc(String from, String to, int size){
-        List<Arc> toList;
-        List<Pair<String,Integer>> fromList;
-        if (null == graph.get(from).fst)
-            toList = new ArrayList();
-        else
-            toList = graph.get(from).fst;
-        if (null == graph.get(to).snd){
-            fromList = new ArrayList();
+    public boolean addVertex(String name, String frto, int size, boolean dur){
+        if (graph.get(name) == null) {
+            if (startVertex.equals("")) {
+                System.out.println("Сначала создайте начальную вершину");
+                return false;
+            } else {
+                if (dur) {
+                    graph.put(name, new HashMap());
+                    return addArc(name, frto, size);
+                } else {
+                    graph.put(name, new HashMap());
+                    return addArc(frto, name, size);
+                }
+            }
+        } else {
+            System.out.println("Вершина уже существует");
+          return false;
+        }
+    }
+
+    public boolean addArc(String from, String to, int size){
+        if (graph.get(from) != null && graph.get(to) != null) {
+            Map map = new HashMap();
+            if (graph.get(from) != null) {
+                map = graph.get(from);
+            }
+            map.put(to, size);
+            graph.put(from, map);
+            return true;
+        } else {
+            System.out.println("Вершина(-ны) не существуют");
+            return false;
+        }
+    }
+
+    public boolean delVertex(String name){
+        if (graph.get(name) != null) {
+            if (name.equals(startVertex))
+                startVertex = "";
+            graph.remove(name);
+
+            for (int i = 0; i < graph.size(); i++) {
+                graph.get(graph.keySet().toArray()[i]).remove(name);
+            }
+            return true;
+        } else {
+            System.out.println("Вершины не существует");
+            return false;
+        }
+    }
+
+    public boolean delArc(String from, String to){
+        if (graph.get(from) == null || graph.get(to) == null) {
+            System.out.println("Дуги/вершина(-ы) не сущестсвует(-ют)");
+            return false;
         }
         else {
-            fromList = graph.get(to).snd;
+            graph.get(from).remove(to);
+            return true;
         }
-        toList.add(new Arc(to, size));
-        fromList.add(new Pair(from, toList.size() - 1));
-        graph.put(from, new Pair(toList, graph.get(from).snd));
-        graph.put(to, new Pair(graph.get(to).fst, fromList));
     }
 
-    public void delVertex(String name){
-        for(int i = 0; i < graph.get(name).snd.size(); i++) {
-            graph.get(graph.get(name).snd.get(i).fst).fst.remove((int)graph.get(name).snd.get(i).snd);
-        }
-        graph.remove(name);
-    }
-    public void delArc(String from, String to, int size){
-        for (int i = 0; i < graph.get(from).fst.size(); i++){
-            if (graph.get(from).fst.get(i).getName().equals(to) && graph.get(from).fst.get(i).getSize() == size){
-                graph.get(from).fst.remove(i);
-            }
-        }
-    }
-    public void changeName(String oldName, String newName) {
-        if (graph.get(oldName).fst != null)
-            for (int i = 0; i < graph.get(oldName).fst.size(); i++){
-                for (int j = 0; j < graph.get(graph.get(oldName).fst.get(i).name).snd.size(); j++){
-                    if (graph.get(graph.get(oldName).fst.get(i).name).snd.get(j).fst.equals(oldName)) {
-                        graph.get(graph.get(oldName).fst.get(i).name).snd.get(j).fst = newName;
-                        //graph.get(graph.get(oldName).fst.get(i).name).snd.remove(j);
-                        //graph.get(graph.get(oldName).fst.get(i).name).snd.add(new Pair(newName, graph.get(graph.get(oldName).fst.get(i).name).snd.get(j).snd));
+    public boolean changeName(String oldName, String newName) {
+        if (graph.get(oldName) != null) {
+            graph.put(newName, graph.get(oldName));
+            graph.remove(oldName);
+            for (int i = 0; i < graph.size(); i++) {
+                if (graph.keySet().toArray()[i] != newName) {
+                    Map map = new HashMap();
+                    if (graph.get(graph.keySet().toArray()[i]).get(oldName) != null) {
+                        map.put(newName, graph.get(graph.keySet().toArray()[i]).get(oldName));
+                        graph.get(graph.keySet().toArray()[i]).remove(oldName);
+                        graph.put((String) graph.keySet().toArray()[i], map);
                     }
                 }
             }
-        if (graph.get(oldName).snd != null)
-            for (int i = 0; i < graph.get(oldName).snd.size(); i++) {
-                    graph.get(graph.get(oldName).snd.get(i).fst).fst.
-                            get((int)graph.get(oldName).snd.get(i).snd).setName(newName);
-            }
-        graph.put(newName, graph.get(oldName));
-        graph.remove(oldName);
-    }
-    public void changeArcSize(String from, String to, int oldSize, int newSize){
-        for (int i = 0; i < graph.get(from).fst.size(); i++){
-            if (graph.get(from).fst.get(i).getName().equals(to) && graph.get(from).fst.get(i).getSize() == oldSize){
-                graph.get(from).fst.get(i).setSize(newSize);
-            }
+            return true;
+        } else {
+            System.out.println("Вершина не существует");
+            return false;
         }
-    }
-    public List<Arc> getOutArcs(String from){
-        List<Arc> list = new ArrayList();
-        if (graph.get(from).fst != null)
-        for (int i = 0; i < graph.get(from).fst.size(); i++){
-            list.add(new Arc(graph.get(from).fst.get(i).getName(), graph.get(from).fst.get(i).getSize()));
-        }
-        return list;
-    }
-    public List<Arc> getInArcs(String to) {
-        List<Arc> list = new ArrayList();
-        if (graph.get(to).snd != null)
-            for (int i = 0; i < graph.get(to).snd.size(); i++) {
-                list.add(new Arc(graph.get(to).snd.get(i).fst,
-                        graph.get(graph.get(to).snd.get(i).fst).fst.get(graph.get(to).snd.get(i).snd).size));
-            }
-        return list;
     }
 
-    public String getOutArcsInStr(String from){
-        String s = "";
-        for (int i = 0; i < graph.get(from).fst.size(); i++){
-            if (!s.equals("")){
-                s += System.lineSeparator();
-            }
-            s += i+1 + ". Направлена в вершину " + graph.get(from).fst.get(i).getName() +
-                    ", длина " + graph.get(from).fst.get(i).getSize();
+    public boolean changeArcSize(String from, String to, int newSize){
+        if (graph.get(from) != null && graph.get(to) != null && graph.get(from).get(to) != null) {
+            graph.get(from).put(to, newSize);
+            return true;
         }
-        return s;
+        else {
+            System.out.println("Дуги/вершина(-ы) не сущестсвует(-ют)");
+            return false;
+        }
     }
-    public String getInArcsInStr(String to) {
-        String s = "";
-        int ch = 0;
-        if (graph.get(to).snd != null)
-            for (int i = 0; i < graph.get(to).snd.size(); i++) {
-                if (!s.equals("")) {
-                    s += System.lineSeparator();
-                }
-                s += ch + 1 + ". Направлена из вершины " + graph.get(to).snd.get(i).fst +
-                        ", длина " + graph.get(graph.get(to).snd.get(i).fst).fst.get(graph.get(to).snd.get(i).snd).size;
-                ch++;
+
+    public Map getOutArcs(String from){
+        if (graph.get(from) != null) {
+            Map map = new HashMap();
+            for (int i = 0; i < graph.get(from).size(); i++) {
+                map.put(graph.get(from).keySet().toArray()[i], graph.get(from).get(graph.get(from).keySet().toArray()[i]));
             }
-        if (s.equals(""))
+
+            if (map.keySet().size() == 0) {
+                System.out.println("У вершины нет исходящих дуг");
+                return null;
+            }
+            else
+                return map;
+        } else {
             throw new NullPointerException();
-        else
-            return s;
+        }
+    }
+
+    public Map getInArcs(String to) {
+        if (graph.get(to) != null) {
+            Map map = new HashMap();
+            for (int i = 0; i < graph.size(); i++) {
+                if (!graph.keySet().toArray()[i].equals(to))
+                    for (int j = 0; j < graph.get(graph.keySet().toArray()[i]).size(); j++) {
+                        if (graph.get(graph.keySet().toArray()[i]).keySet().toArray()[j].equals(to))
+                            map.put(graph.keySet().toArray()[i], graph.get(graph.keySet().toArray()[i]).
+                                    get(graph.get(graph.keySet().toArray()[i]).keySet().toArray()[j]));
+                    }
+            }
+            if (map.keySet().size() == 0) {
+                System.out.println("У вершины нет входящих дуг");
+                return null;
+            }
+            else
+                return map;
+        } else {
+            throw new NullPointerException();
+        }
     }
 
     @Override
