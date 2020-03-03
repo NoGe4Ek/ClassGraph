@@ -4,7 +4,7 @@ import java.util.*;
 
 public class Graph {
 
-    Map<String, Map<String, Integer>> graph = new HashMap();
+    Map<String, Map<String, Integer>> graph = new HashMap<>();
     String startVertex = "";
 
     public void clearGraph (){
@@ -14,7 +14,7 @@ public class Graph {
     public boolean addVertex(String name){
         if (startVertex.equals("")) {
             startVertex = name;
-            graph.put(name, new HashMap());
+            graph.put(name, new HashMap<>());
             return true;
         } else {
             System.out.println("Начальная вершина уже существует");
@@ -29,10 +29,10 @@ public class Graph {
                 return false;
             } else {
                 if (dur) {
-                    graph.put(name, new HashMap());
+                    graph.put(name, new HashMap<>());
                     return addArc(name, frto, size);
                 } else {
-                    graph.put(name, new HashMap());
+                    graph.put(name, new HashMap<>());
                     return addArc(frto, name, size);
                 }
             }
@@ -44,7 +44,7 @@ public class Graph {
 
     public boolean addArc(String from, String to, int size){
         if (graph.get(from) != null && graph.get(to) != null) {
-            Map map = new HashMap();
+            Map<String, Integer> map = new HashMap<String, Integer>();
             if (graph.get(from) != null) {
                 map = graph.get(from);
             }
@@ -91,10 +91,11 @@ public class Graph {
                 graph.remove(oldName);
                 for (int i = 0; i < graph.size(); i++) {
                     if (graph.keySet().toArray()[i] != newName) {
-                        Map map = new HashMap();
                         if (graph.get(graph.keySet().toArray()[i]).get(oldName) != null) {
+                            Map<String, Integer> map;
+                            map = graph.get(graph.keySet().toArray()[i]);
                             map.put(newName, graph.get(graph.keySet().toArray()[i]).get(oldName));
-                            graph.get(graph.keySet().toArray()[i]).remove(oldName);
+                            map.remove(oldName);
                             graph.put((String) graph.keySet().toArray()[i], map);
                         }
                     }
@@ -121,9 +122,9 @@ public class Graph {
         }
     }
 
-    public Map getOutArcs(String from){
+    public Map<Object, Integer> getOutArcs(String from){
         if (graph.get(from) != null) {
-            Map map = new HashMap();
+            Map<Object, Integer> map = new HashMap<Object, Integer>();
             for (int i = 0; i < graph.get(from).size(); i++) {
                 map.put(graph.get(from).keySet().toArray()[i], graph.get(from).get(graph.get(from).keySet().toArray()[i]));
             }
@@ -139,9 +140,9 @@ public class Graph {
         }
     }
 
-    public Map getInArcs(String to) {
+    public Map<Object, Integer> getInArcs(String to) {
         if (graph.get(to) != null) {
-            Map map = new HashMap();
+            Map<Object, Integer> map = new HashMap<Object, Integer>();
             for (int i = 0; i < graph.size(); i++) {
                 if (!graph.keySet().toArray()[i].equals(to))
                     for (int j = 0; j < graph.get(graph.keySet().toArray()[i]).size(); j++) {
