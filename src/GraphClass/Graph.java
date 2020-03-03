@@ -8,6 +8,7 @@ public class Graph {
     String startVertex = "";
 
     public void clearGraph (){
+        startVertex = "";
         graph.clear();
     }
 
@@ -167,7 +168,7 @@ public class Graph {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Graph graph1 = (Graph) o;
-        return Objects.equals(graph, graph1.graph);
+        return graph.equals(graph1.graph);
     }
 
     @Override

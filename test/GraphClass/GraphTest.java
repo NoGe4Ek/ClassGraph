@@ -1,6 +1,8 @@
 package GraphClass;
 
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.HashMap;
@@ -26,10 +28,27 @@ public class GraphTest {
         graph.addArc("1", "3", 5);
     }
 
+    @BeforeEach
+    void setUp() {
+        createGraph();
+    }
+
+    @AfterEach
+    void tearDown() {
+        graph.clearGraph();
+    }
+
+    @Test
+    public void addVertex(){
+        graph.clearGraph();
+        Assertions.assertTrue(graph.addVertex("1"));
+        Assertions.assertFalse(graph.addVertex("2"));
+        Assertions.assertTrue(graph.addVertex("2", "1", 10, true));
+        Assertions.assertFalse(graph.addVertex("2", "1", 20, true));
+    }
+
     @Test
     public void getInArcs() {
-        createGraph();
-
         testMap.put("1", 10);
         testMap.put("3", 20);
         Assertions.assertEquals(testMap, graph.getInArcs("2")
@@ -41,13 +60,13 @@ public class GraphTest {
         );
         testMap.clear();
 
-        graph.clearGraph();
+        Assertions.assertThrows(NullPointerException.class, () -> {
+            graph.getInArcs("Несуществующая");
+        });
     }
 
     @Test
     public void getOutArcs() {
-        createGraph();
-
         testMap.put("2", 10);
         testMap.put("3", 5);
         Assertions.assertEquals(testMap, graph.getOutArcs("1")
@@ -59,12 +78,13 @@ public class GraphTest {
         );
         testMap.clear();
 
-        graph.clearGraph();
+        Assertions.assertThrows(NullPointerException.class, () -> {
+            graph.getOutArcs("Несуществующая");
+        });
     }
 
     @Test
     public void changeName() {
-        createGraph();
         graph.changeName("1", "Ростов");
         graph.changeName("2", "Минск");
         graph.changeName("3", "Москва");
@@ -81,12 +101,13 @@ public class GraphTest {
         );
         testMap.clear();
 
-        graph.clearGraph();
+        Assertions.assertFalse(graph.changeName("Несуществующая", "Какое-то имя"));
+
+        Assertions.assertFalse(graph.changeName("Ростов", "Минск"));
     }
 
     @Test
     public void changeArcSize() {
-        createGraph();
         graph.changeArcSize("1", "2", 10);
         graph.changeArcSize("3", "2", 20);
 
@@ -101,13 +122,13 @@ public class GraphTest {
         );
         testMap.clear();
 
-        graph.clearGraph();
+        Assertions.assertFalse(graph.changeArcSize("Несуществующая", "Тоже не существующая", 10));
     }
 
     @Test
     public void delVertex() {
-        createGraph();
-        graph.delVertex("2");
+        Assertions.assertTrue(graph.delVertex("2"));
+        Assertions.assertFalse(graph.delVertex("Несуществующая"));
 
         testMap.put("3", 5);
         Assertions.assertEquals(testMap, graph.getOutArcs("1")
@@ -122,13 +143,10 @@ public class GraphTest {
         Assertions.assertThrows(NullPointerException.class, () -> {
             graph.getInArcs("2");
         });
-
-        graph.clearGraph();
     }
 
     @Test
     public void delArc() {
-        createGraph();
         graph.delArc("1", "2");
 
         testMap.put("3", 5);
@@ -141,6 +159,6 @@ public class GraphTest {
         );
         testMap.clear();
 
-        graph.clearGraph();
+        Assertions.assertFalse(graph.delArc("Несуществующая", "3"));
     }
 }
