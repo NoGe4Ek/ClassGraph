@@ -161,4 +161,19 @@ public class GraphTest {
 
         Assertions.assertFalse(graph.delArc("Несуществующая", "3"));
     }
+
+    @Test
+    public void delWithSplit() {
+        graph.delArc("2", "3");
+        graph.addVertex("3", "2", 20, false);
+        graph.addVertex("4", "3", 10, true);
+        graph.addVertex("5", "4", 10, false);
+        graph.addVertex("6", "4", 10, true);
+        graph.addVertex("7", "6", 10, true);
+        graph.addArc("5", "6", 10);
+        graph.delArc("4", "3");
+
+        Assertions.assertFalse(graph.delArc("5", "6"));
+        Assertions.assertFalse(graph.changeName("7", "7ка не существует"));
+    }
 }

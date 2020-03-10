@@ -66,6 +66,7 @@ public class Graph {
 
             for (int i = 0; i < graph.size(); i++) {
                 graph.get(graph.keySet().toArray()[i]).remove(name);
+                delSplited((String) graph.keySet().toArray()[i]);
             }
             return true;
         } else {
@@ -81,6 +82,8 @@ public class Graph {
         }
         else {
             graph.get(from).remove(to);
+            delSplited(from);
+            delSplited(to);
             return true;
         }
     }
@@ -163,16 +166,81 @@ public class Graph {
         }
     }
 
+    private boolean delSplited(String checkable){
+        if (checkable == startVertex)
+            return false;
+        Map<String, Integer> peakSt = new HashMap();
+        for (int i = 0; i < graph.size(); i++){
+            peakSt.put((String) graph.keySet().toArray()[i], 1);
+        }
+        peakSt.put(checkable, 2);
+        Deque<String> deque = new LinkedList<String>();
+        deque.addFirst(checkable);
+
+        while ((peakSt.containsValue(1) || peakSt.containsValue(2)) && deque.size() != 0) {
+            String current = deque.getFirst();
+            if(peakSt.get(current) == 2) {
+                for (int i = 0; i < graph.get(current).size(); i++) {
+                    if (graph.get(current).keySet().toArray()[i] == startVertex)
+                        return false;
+                    if (peakSt.get(graph.get(current).keySet().toArray()[i]) == 1) {
+                        deque.addLast((String) graph.get(current).keySet().toArray()[i]);
+                        peakSt.put((String) graph.get(current).keySet().toArray()[i], 2);
+                    }
+                }
+                for (int i = 0; i < graph.size(); i++) {
+                    for (int j = 0; j < graph.get(graph.keySet().toArray()[i]).size(); j++) {
+                        if (graph.get(graph.keySet().toArray()[i]).keySet().toArray()[j].equals(current)) {
+                            if (graph.keySet().toArray()[i] == startVertex)
+                                return false;
+                            if (peakSt.get(graph.keySet().toArray()[i]) == 1) {
+                                deque.addLast((String) graph.keySet().toArray()[i]);
+                                peakSt.put((String) graph.keySet().toArray()[i], 2);
+                            }
+                        }
+                    }
+                }
+                peakSt.put(current, 3);
+                deque.removeFirst();
+            }
+        }
+
+        for (int i = 0; i < peakSt.size(); i++){
+            if (peakSt.get(peakSt.keySet().toArray()[i]) == 3){
+                delVertexAfterSplit((String) peakSt.keySet().toArray()[i]);
+            }
+        }
+
+        return true;
+    }
+
+    private boolean delVertexAfterSplit(String name){
+        if (graph.get(name) != null) {
+            if (name.equals(startVertex))
+                startVertex = "";
+            graph.remove(name);
+
+            for (int i = 0; i < graph.size(); i++) {
+                graph.get(graph.keySet().toArray()[i]).remove(name);
+            }
+            return true;
+        } else {
+            System.out.println("Вершины не существует");
+            return false;
+        }
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Graph graph1 = (Graph) o;
-        return graph.equals(graph1.graph);
+        return Objects.equals(graph, graph1.graph) &&
+                Objects.equals(startVertex, graph1.startVertex);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(graph);
+        return Objects.hash(graph, startVertex);
     }
 }
