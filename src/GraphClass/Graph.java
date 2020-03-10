@@ -2,16 +2,28 @@ package GraphClass;
 
 import java.util.*;
 
+/** Класс ориентированного графа */
 public class Graph {
-
+    /** Поле структуры графа */
     Map<String, Map<String, Integer>> graph = new HashMap<>();
+
+    /** Поле начальной вершины */
     String startVertex = "";
 
+    /** Функция очистки графа */
     public void clearGraph (){
         startVertex = "";
         graph.clear();
     }
 
+    /**
+     * Функция добавления начальной вершины в граф
+     * @param name - имя создаваемой вершины
+     * @return возвращает результат выполнения в формате true/false
+     *
+     * Для добавления последующих вершин смотрите перегрузку
+     * @see Graph#addVertex(String, String, int, boolean)
+     */
     public boolean addVertex(String name){
         if (startVertex.equals("")) {
             startVertex = name;
@@ -23,6 +35,14 @@ public class Graph {
         }
     }
 
+    /**
+     * Функция добавления НЕ начальной вершины в граф
+     * @param name - имя создаваемой вершины
+     * @param frto - имя вершины, с коротой хотим связать
+     * @param size - размер дуги между вершинами
+     * @param dur - направление дуги (true - от новой вершины к старой, false - реверсивно)
+     * @return возвращает результат выполнения в формате true/false
+     */
     public boolean addVertex(String name, String frto, int size, boolean dur){
         if (graph.get(name) == null) {
             if (startVertex.equals("")) {
@@ -43,6 +63,13 @@ public class Graph {
         }
     }
 
+    /**
+     * Функция добавления дуги между существующими вершинами
+     * @param from - начальная вершина
+     * @param to - конечная вершина
+     * @param size - размер дуги между вершинами
+     * @return возвращает результат выполнения в формате true/false
+     */
     public boolean addArc(String from, String to, int size){
         if (graph.get(from) != null && graph.get(to) != null) {
             Map<String, Integer> map = new HashMap<String, Integer>();
@@ -58,6 +85,11 @@ public class Graph {
         }
     }
 
+    /**
+     * Функция удаления существующей вершины с проверкой на деление графа на несвязные части
+     * @param name - имя удаляемой вершины
+     * @return возвращает результат выполнения в формате true/false
+     */
     public boolean delVertex(String name){
         if (graph.get(name) != null) {
             if (name.equals(startVertex))
@@ -75,6 +107,12 @@ public class Graph {
         }
     }
 
+    /**
+     * Функция удаления существующей дуги с проверкой на деление графа на несвязные части
+     * @param from - начальная вершина
+     * @param to - конечная вершина
+     * @return возвращает результат выполнения в формате true/false
+     */
     public boolean delArc(String from, String to){
         if (graph.get(from) == null || graph.get(to) == null) {
             System.out.println("Дуги/вершина(-ы) не сущестсвует(-ют)");
@@ -88,6 +126,12 @@ public class Graph {
         }
     }
 
+    /**
+     * Функция смены имени существующей вершины
+     * @param oldName - старое имя вершины
+     * @param newName - новое имя вершины
+     * @return возвращает результат выполнения в формате true/false
+     */
     public boolean changeName(String oldName, String newName) {
         if (graph.get(newName) == null) {
             if (graph.get(oldName) != null) {
@@ -115,6 +159,13 @@ public class Graph {
         }
     }
 
+    /**
+     * Функция изменения размера существующей дуги
+     * @param from - начальная вершина
+     * @param to - конечная вершина
+     * @param newSize - новый размер для вершины
+     * @return возвращает результат выполнения в формате true/false
+     */
     public boolean changeArcSize(String from, String to, int newSize){
         if (graph.get(from) != null && graph.get(to) != null && graph.get(from).get(to) != null) {
             graph.get(from).put(to, newSize);
@@ -126,6 +177,12 @@ public class Graph {
         }
     }
 
+    /**
+     * Функция, возвращающая исходящие дуги из заданной вершины
+     * @param from - вершина, у которой требуется узнать исходящие дуги
+     * @return возвращает результат выполнения в формате Map [имя вершины, в которую приходит дуга - размер дуги]
+     * @exception NullPointerException ошибка, возникающая при попытке найти исходящие дуги из несуществующей вершины
+     */
     public Map<Object, Integer> getOutArcs(String from){
         if (graph.get(from) != null) {
             Map<Object, Integer> map = new HashMap<Object, Integer>();
@@ -144,6 +201,12 @@ public class Graph {
         }
     }
 
+    /**
+     * Функция, возвращающая входящие дуги в заданную вершину
+     * @param to - вершина, у которой требуется узнать входящие дуги
+     * @return возвращает результат выполнения в формате Map [имя вершины, из которой приходит - размер дуги]
+     * @exception NullPointerException ошибка, возникающая при попытке найти входящие дуги в несуществующую вершину
+     */
     public Map<Object, Integer> getInArcs(String to) {
         if (graph.get(to) != null) {
             Map<Object, Integer> map = new HashMap<Object, Integer>();
@@ -166,6 +229,12 @@ public class Graph {
         }
     }
 
+    /**
+     * Функция, проверки графа на деление и удаление побочной част(и/-ей)
+     * Побочной частью считается та часть, которая не связана с начальной вершиной {@link Graph#startVertex}
+     * @param checkable - вершина, связь которой необходимо проверить (подозрительная на разрыв)
+     * @return возвращает результат выполнения в формате true/false
+     */
     private boolean delSplited(String checkable){
         if (checkable == startVertex)
             return false;
@@ -214,6 +283,11 @@ public class Graph {
         return true;
     }
 
+    /**
+     * Функция, для безопасного удаления вершин после выполнения проверки {@link Graph#delSplited(String)}
+     * @param name - имя удаляемой вершины
+     * @return возвращает результат выполнения в формате true/false
+     */
     private boolean delVertexAfterSplit(String name){
         if (graph.get(name) != null) {
             if (name.equals(startVertex))
