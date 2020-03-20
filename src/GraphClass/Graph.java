@@ -5,10 +5,10 @@ import java.util.*;
 /** Класс ориентированного графа */
 public class Graph {
     /** Поле структуры графа */
-    Map<String, Map<String, Integer>> graph = new HashMap<>();
+    private Map<String, Map<String, Integer>> graph = new HashMap<>();
 
     /** Поле начальной вершины */
-    String startVertex = "";
+    private String startVertex = "";
 
     /** Функция очистки графа */
     public void clearGraph (){
