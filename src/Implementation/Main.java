@@ -56,6 +56,7 @@ public class Main {
             if (str.matches("close")){
                 open = false;
             }
+            System.out.println(graph.toString());
         }
     }
 }

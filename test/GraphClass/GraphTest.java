@@ -60,9 +60,8 @@ public class GraphTest {
         );
         testMap.clear();
 
-        Assertions.assertThrows(NullPointerException.class, () -> {
-            graph.getInArcs("Несуществующая");
-        });
+        Assertions.assertEquals(new HashMap<>(), graph.getInArcs("Несуществующая")
+        );
     }
 
     @Test
@@ -78,9 +77,8 @@ public class GraphTest {
         );
         testMap.clear();
 
-        Assertions.assertThrows(NullPointerException.class, () -> {
-            graph.getOutArcs("Несуществующая");
-        });
+        Assertions.assertEquals(new HashMap<>(), graph.getOutArcs("Несуществующая")
+        );
     }
 
     @Test
@@ -140,9 +138,8 @@ public class GraphTest {
         );
         testMap.clear();
 
-        Assertions.assertThrows(NullPointerException.class, () -> {
-            graph.getInArcs("2");
-        });
+        Assertions.assertEquals(new HashMap<>(), graph.getInArcs("2")
+        );
     }
 
     @Test

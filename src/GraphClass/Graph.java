@@ -1,6 +1,7 @@
 package GraphClass;
 
 import java.util.*;
+import java.util.logging.Logger;
 
 /** Класс ориентированного графа */
 public class Graph {
@@ -9,6 +10,8 @@ public class Graph {
 
     /** Поле начальной вершины */
     private String startVertex = "";
+
+    private static Logger log = Logger.getLogger(Graph.class.getName());
 
     /** Функция очистки графа */
     public void clearGraph (){
@@ -30,7 +33,7 @@ public class Graph {
             graph.put(name, new HashMap<>());
             return true;
         } else {
-            System.out.println("Начальная вершина уже существует");
+            log.info("Начальная вершина уже существует");
             return false;
         }
     }
@@ -46,7 +49,7 @@ public class Graph {
     public boolean addVertex(String name, String frto, int size, boolean dur){
         if (graph.get(name) == null) {
             if (startVertex.equals("")) {
-                System.out.println("Сначала создайте начальную вершину");
+                log.info("Сначала создайте начальную вершину");
                 return false;
             } else {
                 if (dur) {
@@ -58,7 +61,7 @@ public class Graph {
                 }
             }
         } else {
-            System.out.println("Вершина уже существует");
+            log.info("Вершина уже существует");
           return false;
         }
     }
@@ -77,10 +80,9 @@ public class Graph {
                 map = graph.get(from);
             }
             map.put(to, size);
-            graph.put(from, map);
             return true;
         } else {
-            System.out.println("Вершина(-ны) не существуют");
+            log.info("Вершина(-ны) не существуют");
             return false;
         }
     }
@@ -102,7 +104,7 @@ public class Graph {
             }
             return true;
         } else {
-            System.out.println("Вершины не существует");
+            log.info("Вершины не существует");
             return false;
         }
     }
@@ -115,7 +117,7 @@ public class Graph {
      */
     public boolean delArc(String from, String to){
         if (graph.get(from) == null || graph.get(to) == null) {
-            System.out.println("Дуги/вершина(-ы) не сущестсвует(-ют)");
+            log.info("Дуги/вершина(-ы) не сущестсвует(-ют)");
             return false;
         }
         else {
@@ -150,11 +152,11 @@ public class Graph {
                 }
                 return true;
             } else {
-                System.out.println("Вершина не существует");
+                log.info("Вершина не существует");
                 return false;
             }
         } else {
-            System.out.println("Вершина с таким именем уже существует");
+            log.info("Вершина с таким именем уже существует");
             return false;
         }
     }
@@ -172,7 +174,7 @@ public class Graph {
             return true;
         }
         else {
-            System.out.println("Дуги/вершина(-ы) не сущестсвует(-ют)");
+            log.info("Дуги/вершина(-ы) не сущестсвует(-ют)");
             return false;
         }
     }
@@ -187,17 +189,18 @@ public class Graph {
         if (graph.get(from) != null) {
             Map<Object, Integer> map = new HashMap<Object, Integer>();
             for (int i = 0; i < graph.get(from).size(); i++) {
-                map.put(graph.get(from).keySet().toArray()[i], graph.get(from).get(graph.get(from).keySet().toArray()[i]));
+                Integer arcSize = graph.get(from).get(graph.get(from).keySet().toArray()[i]);
+                Object vertexIn = graph.get(from).keySet().toArray()[i];
+                map.put(vertexIn, arcSize);
             }
 
             if (map.keySet().size() == 0) {
-                System.out.println("У вершины нет исходящих дуг");
-                return null;
+                log.info("У вершины нет исходящих дуг");
             }
-            else
-                return map;
+            return map;
         } else {
-            throw new NullPointerException();
+            log.info("Вершины не существует");
+            return new HashMap<>();
         }
     }
 
@@ -213,19 +216,21 @@ public class Graph {
             for (int i = 0; i < graph.size(); i++) {
                 if (!graph.keySet().toArray()[i].equals(to))
                     for (int j = 0; j < graph.get(graph.keySet().toArray()[i]).size(); j++) {
-                        if (graph.get(graph.keySet().toArray()[i]).keySet().toArray()[j].equals(to))
-                            map.put(graph.keySet().toArray()[i], graph.get(graph.keySet().toArray()[i]).
-                                    get(graph.get(graph.keySet().toArray()[i]).keySet().toArray()[j]));
+                        if (graph.get(graph.keySet().toArray()[i]).keySet().toArray()[j].equals(to)) {
+                            Integer arcSize = graph.get(graph.keySet().toArray()[i]).
+                                    get(graph.get(graph.keySet().toArray()[i]).keySet().toArray()[j]);
+                            Object vertexOut = graph.keySet().toArray()[i];
+                            map.put(vertexOut, arcSize);
+                        }
                     }
             }
             if (map.keySet().size() == 0) {
-                System.out.println("У вершины нет входящих дуг");
-                return null;
+                log.info("У вершины нет входящих дуг");
             }
-            else
-                return map;
+            return map;
         } else {
-            throw new NullPointerException();
+            log.info("Вершины не существует");
+            return new HashMap<>();
         }
     }
 
@@ -250,7 +255,7 @@ public class Graph {
             String current = deque.getFirst();
             if(peakSt.get(current) == 2) {
                 for (int i = 0; i < graph.get(current).size(); i++) {
-                    if (graph.get(current).keySet().toArray()[i] == startVertex)
+                    if (graph.get(current).keySet().toArray()[i].equals(startVertex))
                         return false;
                     if (peakSt.get(graph.get(current).keySet().toArray()[i]) == 1) {
                         deque.addLast((String) graph.get(current).keySet().toArray()[i]);
@@ -260,7 +265,7 @@ public class Graph {
                 for (int i = 0; i < graph.size(); i++) {
                     for (int j = 0; j < graph.get(graph.keySet().toArray()[i]).size(); j++) {
                         if (graph.get(graph.keySet().toArray()[i]).keySet().toArray()[j].equals(current)) {
-                            if (graph.keySet().toArray()[i] == startVertex)
+                            if (graph.keySet().toArray()[i].equals(startVertex))
                                 return false;
                             if (peakSt.get(graph.keySet().toArray()[i]) == 1) {
                                 deque.addLast((String) graph.keySet().toArray()[i]);
@@ -299,7 +304,7 @@ public class Graph {
             }
             return true;
         } else {
-            System.out.println("Вершины не существует");
+            log.info("Вершины не существует");
             return false;
         }
     }
@@ -316,5 +321,13 @@ public class Graph {
     @Override
     public int hashCode() {
         return Objects.hash(graph, startVertex);
+    }
+
+    @Override
+    public String toString() {
+        return "Graph{" +
+                "graph=" + graph +
+                ", startVertex='" + startVertex + '\'' +
+                '}';
     }
 }
